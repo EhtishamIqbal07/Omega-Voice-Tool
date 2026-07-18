@@ -1,12 +1,5 @@
 ﻿streamlit
 huggingface_hub
-loguru
-torch
-torchaudio
-transformers
-pydub
-ffmpeg-python
-soundfile
 requests
-omegaconf
-resampy
+pydub
+torch

@@ -1,27 +1,34 @@
-from huggingface_hub import hf_hub_download
+import streamlit as st
 import os
-import subprocess
-from loguru import logger
+from huggingface_hub import hf_hub_download
+
+# Page Configuration
+st.set_page_config(page_title="AI Voice Cloning Studio", layout="centered")
+
+st.title("Omega Voice Clone Tool")
+st.write("Voice cloning model is loading from HuggingFace...")
 
 # 1. HuggingFace se model automatic download/load karein
-model_path = hf_hub_download(
-    repo_id="Ehtisham01/Omega-Voice-Tool-Updated", 
-    filename="model.pth"
-)
-logger.info(f"Model successfully loaded from: {model_path}")
+@st.cache_resource
+def load_model():
+    model_path = hf_hub_download(
+        repo_id="Ehtisham01/Omega-Voice-Tool-Updated", 
+        filename="model.pth"
+    )
+    return model_path
 
-# 2. Environment variables set karein (taake code ko pata ho ke files kahan hain)
-os.environ['DEVICE'] = "cuda" # Agar Streamlit par GPU na ho toh "cpu" kar dein
+try:
+    model_path = load_model()
+    st.success(f"Model successfully loaded!")
+    st.write(f"Model Path: {model_path}")
+    
+    # Yahan apna baaki ka UI ka code likhein (maslan input fields etc.)
+    st.info("System is ready for processing.")
+
+except Exception as e:
+    st.error(f"Error loading model: {e}")
+
+# Environment Variables
+os.environ['DEVICE'] = "cpu" # Streamlit cloud par aksar CPU hi hota hai
 os.environ['OUTPUT'] = "output/"
 os.environ['SPEAKER'] = "speakers/"
-os.environ['MODEL_SOURCE'] = "local"
-os.environ["MODEL_VERSION"] = "v2.0.2"
-os.environ["LANGUAGE"] = "Auto"
-os.environ["LOWVRAM_MODE"] = "false"
-os.environ["DEEPSPEED"] = "false"
-
-# 3. Streamlit app launch karein
-if __name__ == "__main__":
-    from xtts_webui import demo
-    # Streamlit par chalane ke liye direct launch
-    demo.launch(share=True, inbrowser=True)
