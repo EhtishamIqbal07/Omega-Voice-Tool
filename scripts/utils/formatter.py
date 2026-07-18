@@ -2,7 +2,6 @@ import os
 import gc
 import torchaudio
 import pandas
-from faster_whisper import WhisperModel
 from glob import glob
 
 from tqdm import tqdm

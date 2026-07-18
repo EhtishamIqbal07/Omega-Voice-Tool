@@ -16,14 +16,12 @@ import ffmpeg
 import time
 import os
 
-import whisperx
 import argparse
 
 import noisereduce
 from pedalboard import Pedalboard, NoiseGate, LowpassFilter, Compressor, LowShelfFilter, Gain
 import soundfile as sf
 
-from faster_whisper import WhisperModel
 import random
 import pysubs2
 
