@@ -6,9 +6,8 @@ from huggingface_hub import hf_hub_download
 st.set_page_config(page_title="AI Voice Cloning Studio", layout="centered")
 
 st.title("Omega Voice Clone Tool")
-st.write("Voice cloning model is loading from HuggingFace...")
 
-# 1. HuggingFace se model automatic download/load karein
+# 1. Model loading
 @st.cache_resource
 def load_model():
     model_path = hf_hub_download(
@@ -17,18 +16,25 @@ def load_model():
     )
     return model_path
 
+# UI Section
 try:
     model_path = load_model()
-    st.success(f"Model successfully loaded!")
-    st.write(f"Model Path: {model_path}")
+    st.success("Model successfully loaded!")
     
-    # Yahan apna baaki ka UI ka code likhein (maslan input fields etc.)
-    st.info("System is ready for processing.")
+    # Text input for voice cloning
+    text_input = st.text_area("Enter text to convert to voice:", "Hello, welcome to Omega Voice Tool.")
+    
+    if st.button("Generate Audio"):
+        if text_input:
+            st.info("Generating audio... please wait.")
+            
+            # --- Yahan aapka model inference code aayega ---
+            # Jaise: audio = model.predict(text_input)
+            
+            st.warning("Model inference logic needs to be connected here.")
+            st.audio("output.wav") # Jab output file generate ho jaye
+        else:
+            st.error("Please enter some text first.")
 
 except Exception as e:
-    st.error(f"Error loading model: {e}")
-
-# Environment Variables
-os.environ['DEVICE'] = "cpu" # Streamlit cloud par aksar CPU hi hota hai
-os.environ['OUTPUT'] = "output/"
-os.environ['SPEAKER'] = "speakers/"
+    st.error(f"Error: {e}")
