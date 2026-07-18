@@ -1,40 +1,42 @@
 import streamlit as st
 import os
-from huggingface_hub import hf_hub_download
-
-# Page Configuration
-st.set_page_config(page_title="AI Voice Cloning Studio", layout="centered")
+from TTS.api import TTS
 
 st.title("Omega Voice Clone Tool")
 
-# 1. Model loading
+# Model load karne ka function
 @st.cache_resource
-def load_model():
-    model_path = hf_hub_download(
-        repo_id="Ehtisham01/Omega-Voice-Tool-Updated", 
-        filename="model.pth"
-    )
-    return model_path
+def load_tts_engine():
+    # XTTS v2 model load karna
+    tts = TTS("tts_models/multilingual/multi-dataset/xtts_v2").to("cpu")
+    return tts
 
-# UI Section
+# Engine load karein
 try:
-    model_path = load_model()
-    st.success("Model successfully loaded!")
-    
-    # Text input for voice cloning
-    text_input = st.text_area("Enter text to convert to voice:", "Hello, welcome to Omega Voice Tool.")
-    
-    if st.button("Generate Audio"):
-        if text_input:
-            st.info("Generating audio... please wait.")
-            
-            # --- Yahan aapka model inference code aayega ---
-            # Jaise: audio = model.predict(text_input)
-            
-            st.warning("Model inference logic needs to be connected here.")
-            st.audio("output.wav") # Jab output file generate ho jaye
-        else:
-            st.error("Please enter some text first.")
-
+    with st.spinner("Loading AI Voice Engine..."):
+        tts = load_tts_engine()
+        st.success("Engine Ready!")
 except Exception as e:
-    st.error(f"Error: {e}")
+    st.error(f"Engine Load Error: {e}")
+
+text_input = st.text_area("Enter text:", "Hello, welcome to Omega Voice Tool.")
+
+if st.button("Generate Audio"):
+    if text_input:
+        # Reference file ka sahi path
+        ref_wav = "reference.wav"
+        
+        if os.path.exists(ref_wav):
+            with st.spinner("Generating audio..."):
+                try:
+                    tts.tts_to_file(text=text_input,
+                                    file_path="output.wav",
+                                    speaker_wav=ref_wav,
+                                    language="en")
+                    st.audio("output.wav")
+                except Exception as e:
+                    st.error(f"Generation Error: {e}")
+        else:
+            st.error(f"Error: {ref_wav} file not found in directory!")
+    else:
+        st.error("Please enter some text first.")
