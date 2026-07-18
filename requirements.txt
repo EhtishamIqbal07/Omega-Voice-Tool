@@ -1,5 +1,7 @@
 ﻿streamlit
 huggingface_hub
-requests
-pydub
+TTS
 torch
+torchaudio
+numpy
+pyannote.audio
